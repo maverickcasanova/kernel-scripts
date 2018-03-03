@@ -83,6 +83,7 @@ def get_kernel_sources(kernel_version, downloads_dir):
 
     kernel_version_list = split_kernel_version(kernel_version)
     major = kernel_version_list[0]
+    minor = kernel_version_list[1]
     patch = kernel_version_list[2]
     base_version = '.'.join(kernel_version_list[0:2])
 
@@ -91,13 +92,17 @@ def get_kernel_sources(kernel_version, downloads_dir):
             base_version=base_version
     )
 
-    fetch_file(
-        'https://cdn.kernel.org/pub/linux/kernel/v{major}.x/linux-{base_version}.tar.xz'.format(
+    if '-rc' in minor:
+        base_version_url = 'https://git.kernel.org/torvalds/t/linux-{base_version}.tar.xz'.format(
+            base_version=base_version
+        )
+    else:
+        base_version_url = 'https://cdn.kernel.org/pub/linux/kernel/v{major}.x/linux-{base_version}.tar.xz'.format(
             major=major,
             base_version=base_version
-        ),
-        tarball_path
-    )
+        )
+
+    fetch_file(base_version_url, tarball_path)
 
     patch_path = None
 
